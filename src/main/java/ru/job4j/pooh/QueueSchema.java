@@ -4,13 +4,8 @@ import java.util.concurrent.*;
 
 public class QueueSchema implements Schema {
 
-    // контейнер  для регистрации потребителей
     private final ConcurrentHashMap<String, CopyOnWriteArrayList<Receiver>> receivers = new ConcurrentHashMap<>();
-
-     // контейнер используется для аккумуляции сообщений от поставщика
     private final ConcurrentHashMap<String, BlockingQueue<String>> data = new ConcurrentHashMap<>();
-
-    // многопоточный блокирующий флаг. С помощью этого флага мы регулируем работу очередей в контейнере data
     private final Condition condition = new Condition();
 
     @Override
@@ -30,11 +25,8 @@ public class QueueSchema implements Schema {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            // перебираем всех зарегистрированных потребителей
             for (var queueKey : receivers.keySet()) {
-                // возвращаем очередь сообщений от поставщика, либо пустую очередь
                 var queue = data.getOrDefault(queueKey, new LinkedBlockingQueue<>());
-                // возвращаем очередь сообщений от потребителя
                 var receiversByQueue = receivers.get(queueKey);
                 var it = receiversByQueue.iterator();
                 while (it.hasNext()) {
