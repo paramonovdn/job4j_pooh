@@ -31,15 +31,13 @@ public class TopicSchema implements Schema {
                 var queue = data.getOrDefault(queueKey, new LinkedBlockingQueue<>());
                 var receiversByQueue = receivers.get(queueKey);
                 var it = receiversByQueue.iterator();
+                if (queue.size() == 0) {
+                    break;
+                }
                 while (it.hasNext()) {
-                    if (queue.size() > 0) {
-                        var receiver = it.next();
-                        for (String data : queue) {
-                            receiver.receive(data);
-                        }
-                    }
-                    if (queue.size() == 0) {
-                        break;
+                    var receiver = it.next();
+                    for (String data : queue) {
+                        receiver.receive(data);
                     }
                     if (!it.hasNext()) {
                         it = receiversByQueue.iterator();
