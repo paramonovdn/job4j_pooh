@@ -111,21 +111,13 @@ class QueueSchemaTest {
         queue.publish(new Message("city", "11"));
         queue.addReceiver(new TextReceiver(count, "weather", firstOut));
         queue.addReceiver(new TextReceiver(count, "weather", secondOut));
-        System.out.println(firstOut.size());
         var thread = new Thread(queue);
-        System.out.println(firstOut.size());
         thread.start();
-        System.out.println(firstOut.size());
         count.await();
-        System.out.println(firstOut.size());
         thread.interrupt();
-        System.out.println(firstOut.size());
         assertThat(firstOut.size()).isEqualTo(1);
-        System.out.println(firstOut.size());
         assertThat(firstOut.iterator().next()).isIn("23", "20");
-        System.out.println(firstOut.size());
         assertThat(secondOut.size()).isEqualTo(1);
-        System.out.println(firstOut.size());
         assertThat(secondOut.iterator().next()).isIn("23", "20");
     }
 }
